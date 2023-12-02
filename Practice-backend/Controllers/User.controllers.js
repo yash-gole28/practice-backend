@@ -5,20 +5,12 @@ export const addCart = async(req , res)=>{
     try{
         const {productId , userId} = req.body
         if(!productId || !userId)return res.status(404).json({success:false , message:'no Id matched'})
-        
-        const find = await UserModal.findById(userId , [{cart:productId}])
 
-        if(!find){
+        
             await UserModal.findByIdAndUpdate(userId , {$push : {cart:productId}})
             return res.status(200).json({success:true , message:"product added to cart"})
            
-        }else{
-            console.log(find)
-            return res.status(200).json({success:true , message: "product already added to cart"})
-        }
        
-   
-   
     }catch(error){
        return res.status(500).json({success:false , message:"already exist"})
     }
@@ -45,5 +37,32 @@ export const getCart = async(req , res)=>{
     }catch(error){
         console.log(error)
        return res.status(500).json({success:false , message:error})
+    }
+}
+
+
+export const deleteCart = async(req, res)=>{
+    try{
+        const {productId , userId} = req.body
+        if(!productId || !userId)return res.status(404).json({success:false , message:'no Id matched'})
+
+        const user = await UserModal.findById(userId)
+        if (!user) return res.status(404).json({ success: false, message: "User not found.." })
+
+        const index = user.cart.indexOf(productId);
+        user.cart.splice(index, 1)
+        await user.save();
+
+        var userCart = []
+        for (var i = 0; i < user.cart.length; i++) {
+            const productData = await ProductModal.findById(user.cart[i])
+            userCart.push(productData)
+        }
+          
+            return res.status(200).json({success:true , message:"product deleted from cart"})
+           
+       
+    }catch(error){
+       return res.status(500).json({success:false , message:"already exist"})
     }
 }
