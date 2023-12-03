@@ -3,7 +3,10 @@ import ProductModal from "../Modals/Product.modal.js"
 export const Products = async (req , res) =>{
    try{
     const AllProducts = await ProductModal.find({})
-    if(AllProducts.length)return res.status(200).json({success:true , message:'Products found',products :AllProducts})
+    if(AllProducts.length) {
+        console.log(AllProducts[1]._id)
+        return  res.status(200).json({success:true , message:'Products found',products :AllProducts})
+    }
     // if(!AddProduct.length)return res.status
    }
    catch(error){
